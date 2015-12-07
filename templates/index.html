@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <style>
+      body {
+        text-align: center;
+        background-color: #d3d3d3;
+      }
+    </style>
+  </head>
+  <body>
+    {% for metal in prices %}
+      {{ metal.capitalize() }} : {{ prices[metal] }}<br>
+    {% endfor %}
+  </body>
+  <footer></footer>
+</html>
