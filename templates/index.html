@@ -1,19 +1,16 @@
 <html>
   <head>
-    <style>
-      body {
-        text-align: center;
-        background-color: #d3d3d3;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <title>PM Spot Price</title>
   </head>
   <body>
+    <div class="prices">
     {% for metal in prices %}
       {% if metal != 'last' %}
         {{ metal.capitalize() }} : {{ prices[metal] }}<br>
       {% endif %}
     {% endfor %}
+    </div>
     <br>Last price update : {{ prices['last'] }} UTC<br><br><br>
     Querying the API is simple. Use /api/&lt;metal&gt; where "metal" is one of gold, silver, platinum, palladium, or all.<br><br><br>
   </body>

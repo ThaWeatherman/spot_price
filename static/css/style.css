@@ -1,0 +1,10 @@
+body {
+  text-align: center;
+  background-color: #d3d3d3;
+}
+.prices {
+  margin: 1em auto;
+  width: 45em;
+  border: 4px solid #ccc;
+  padding: 0.8em;
+}
