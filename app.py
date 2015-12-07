@@ -1,4 +1,5 @@
 import atexit
+import datetime
 import re
 import threading
 
@@ -32,11 +33,13 @@ def create_app():
         # metal order: gold, silver, platinum, palladium
         rows = table.find_all('tr')
         prices = [row.find_all('td')[2] for row in rows[1:]]  # 2 is ask
+        now = str(datetime.datetime.utcnow())
         with LOCK:
             PRICES = {'gold': prices[0].text, 'silver': prices[1].text,
                       'platinum': prices[2].text, 'palladium': prices[3].text}
             for metal in PRICES:
                 PRICES[metal] = re.sub(r'[^\d.]', '', PRICES[metal])
+            PRICES['last'] = now
         THREAD = threading.Timer(SLEEP, get_prices, ())
         THREAD.start()
 
@@ -54,36 +57,17 @@ app = create_app()
 api = Api(app)
 
 
-class Gold(Resource):
-    def get(self):
-        return {'gold': PRICES['gold']}
+class Metal(Resource):
+    def get(self, metal):
+        if metal in PRICES:
+            return {metal: PRICES[metal], 'last': PRICES['last']}
+        elif metal == 'all':
+            return PRICES
+        else:
+            return {'error': 'No such metal'}, 400
 
 
-class Silver(Resource):
-    def get(self):
-        return {'silver': PRICES['silver']}
-
-
-class Platinum(Resource):
-    def get(self):
-        return {'platinum': PRICES['platinum']}
-
-
-class Palladium(Resource):
-    def get(self):
-        return {'palladium': PRICES['palladium']}
-
-
-class All(Resource):
-    def get(self):
-        return PRICES
-
-
-api.add_resource(Gold, '/api/gold')
-api.add_resource(Silver, '/api/silver')
-api.add_resource(Platinum, '/api/platinum')
-api.add_resource(Palladium, '/api/palladium')
-api.add_resource(All, '/api/all')
+api.add_resource(Gold, '/api/<string:metal>')
 
 
 @app.route('/')

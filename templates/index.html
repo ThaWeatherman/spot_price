@@ -9,8 +9,15 @@
   </head>
   <body>
     {% for metal in prices %}
-      {{ metal.capitalize() }} : {{ prices[metal] }}<br>
+      {% if metal != 'last' %}
+        {{ metal.capitalize() }} : {{ prices[metal] }}<br>
+      {% endif %}
     {% endfor %}
+    <br>Last price update : {{ prices['last'] }}
   </body>
-  <footer></footer>
+  <footer>
+    <p>Copyright 2015 Sean Beck</p>
+    <p>If you have an issue, please report is on Github</p>
+    <iframe src="https://ghbtns.com/github-btn.html?user=ThaWeatherman&repo=spot_price&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+  </footer>
 </html>
