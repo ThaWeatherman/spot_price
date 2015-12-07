@@ -67,7 +67,7 @@ class Metal(Resource):
             return {'error': 'No such metal'}, 400
 
 
-api.add_resource(Gold, '/api/<string:metal>')
+api.add_resource(Metal, '/api/<string:metal>')
 
 
 @app.route('/')
