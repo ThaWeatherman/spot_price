@@ -26,7 +26,13 @@ def create_app():
     def get_prices():
         global PRICES
         global THREAD
-        req = requests.get('http://www.apmex.com')
+        while True:
+            try:
+                req = requests.get('http://www.apmex.com')
+                if req.status_code == 200:
+                    break
+            except:
+                continue
         soup = BeautifulSoup(req.content, 'lxml')
         table = soup.select('table.table-spot-prices')[0]
         # column order: metal, bid, ask, change
