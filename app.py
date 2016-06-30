@@ -1,16 +1,11 @@
 import atexit
 import datetime
-import re
 import threading
 
-from bs4 import BeautifulSoup
 from flask import Flask
 from flask import render_template
 from flask_restful import Resource, Api
 import requests
-
-# from preev import btc
-# from preev import ltc
 
 
 PRICES = {}
@@ -32,7 +27,6 @@ def create_app():
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
         while True:
             try:
-                # req = requests.get('http://www.apmex.com', headers=headers)
                 req = requests.get('http://www.providentmetals.com/services/spot/summary.USD.json', headers=headers)
                 if req.status_code == 200:
                     break
@@ -43,22 +37,13 @@ def create_app():
             ltc_price = round(float(requests.get("https://api.kraken.com/0/public/Ticker?pair=xltczusd").json()['result']['XLTCZUSD']['b'][0]), 2)
             btc_price = float(requests.get('https://api.coinbase.com/v2/prices/spot?currency=USD').json()['data']['amount'])# btc()
         except Exception:
-        # except ZeroDivisionError:
-            pass
-        # soup = BeautifulSoup(req.content, 'lxml')
-        # table = soup.select('table.table-spot-prices')[0]
-        # # column order: metal, bid, ask, change
-        # # metal order: gold, silver, platinum, palladium
-        # rows = table.find_all('tr')
-        # prices = [row.find_all('td')[2] for row in rows[1:]]  # 2 is ask
+            ltc_price = PRICES['litecoin'] if 'litecoin' in PRICES else 0
+            btc_price = PRICES['bitcoin'] if 'bitcoin' in PRICES else 0
         try:
             now = str(datetime.datetime.utcnow())
             with LOCK:
-                # PRICES = {'gold': prices[0].text, 'silver': prices[1].text,
-                #           'platinum': prices[2].text, 'palladium': prices[3].text}
                 PRICES = {metal['metal_desc'].lower():metal['rate'] for metal in req.json()}
                 for metal in PRICES:
-                    # PRICES[metal] = re.sub(r'[^\d.]', '', PRICES[metal])
                     PRICES[metal] = round(float(PRICES[metal]), 2)
                 PRICES['last'] = now
                 PRICES['bitcoin'] = btc_price
@@ -102,4 +87,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
