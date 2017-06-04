@@ -1,6 +1,6 @@
-beautifulsoup4
 flask
 flask-restful
+flask-script
+flask-scqlalchemy
 gunicorn
-lxml
 requests
