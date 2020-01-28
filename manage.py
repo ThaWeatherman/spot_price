@@ -1,5 +1,6 @@
 import datetime
 
+import bs4
 from flask_script import Manager
 import requests
 
@@ -22,14 +23,20 @@ def update_prices():
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
     while True:
         try:
-            req = requests.get('http://www.providentmetals.com/services/spot/summary.USD.json', headers=headers)
+            req = requests.get('https://www.providentmetals.com/wp-content/themes/provident/includes/current-spot.php', headers=headers)
             if req.status_code == 200:
                 break
             else:
                 print(req.status_code)
         except:
             continue
-    prices = {metal['metal_desc'].lower():metal['rate'] for metal in req.json()}
+    # prices = {metal['metal_desc'].lower():metal['rate'] for metal in req.json()}
+    soup = bs4.BeautifulSoup(req.content, 'lxml')
+    li = soup.ul.findAll("li")
+    li = li[:4]  # MAGIC NUMBER ALERT, periodically check back to ensure this is correct
+    for l in li:
+        sp = l.findAll("span")
+        prices[sp[0].text] = sp[1].text.replace('$', '').replace(',', '')
     # bitfinex ltc: https://api.bitfinex.com/v1/pubticker/ltcusd
     # ltc_price = round(float(requests.get("https://api.kraken.com/0/public/Ticker?pair=xltczusd").json()['result']['XLTCZUSD']['b'][0]), 2)
     ltc_price = float(requests.get('https://api.coinbase.com/v2/prices/LTC-USD/spot').json()['data']['amount'])

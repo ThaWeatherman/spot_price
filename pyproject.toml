@@ -1,0 +1,15 @@
+[tool]
+[tool.poetry]
+authors = ["Your Name <you@example.com>"]
+name = "spot"
+version = "0.0.0"
+[tool.poetry.dependencies]
+beautifulsoup4 = "*"
+flask = "*"
+flask-restful = "*"
+flask-scqlalchemy = "*"
+flask-script = "*"
+gunicorn = "*"
+lxml = "*"
+python = "^3.7"
+requests = "*"
